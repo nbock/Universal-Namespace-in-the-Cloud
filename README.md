@@ -61,15 +61,15 @@ A full illustration of the client-server relationship for each server. To reiter
 
 ![FIG4](images/figure4.png)
 
-#### Overview of OpenShift architecture
+#### Overview of OpenShift architecture ([here](https://www.openshift.com/learn/what-is-openshift)
 
-OpenShift is a distribution of Kubernetes. OpenShift will be used here to orchestrate the two different containers (store and directory server) of Upspin. Upspin will be containerized for deployment on the OpenShift cluster with the store and directory part of the same server. OpenShift is managed through declarative yaml templates ("manifests").
+OpenShift is a distribution of Kubernetes. OpenShift will be used here to orchestrate the container (combined store and directory server) of Upspin. Upspin will be containerized for deployment on the OpenShift cluster with the store and directory part of the same server. OpenShift is managed through declarative yaml templates ("manifests").
 
 <img src= images/figure5.png width="500" class="centerImage">
 
 ## 5. Acceptance Criteria
 
-Our minimum acceptance criteria is an containerized Upspin instance deployed and publicly accessible on the OpenShift Massachusetts Open Cloud with a combined store and directory server, which will store the actual data for items and the directory will give references to the data stored, and a repeatable automated process for containerizing and deploying further Upspin instances.
+Our minimum acceptance criteria is an containerized Upspin instance deployed and publicly accessible on the Massachusetts Open Cloud’s OpenShift cluster with a combined store and directory server, which will store the actual data for items and the directory will give references to the data stored, and a repeatable automated process for containerizing and deploying further Upspin instances.
 
 Our stretch goals may take several different directions:
 
@@ -85,14 +85,14 @@ Our stretch goals may take several different directions:
 **Iteration 1:**
 First iteration will consist of ramping up technical skills along with completion of fundamental tasks which are needed for the MVP. Some of the details of this iteration will be:
 
--   Getting hands-on with the product and understanding the architecture and functionality, this can include running upsin on local machines, going over the documentation.
+-   Getting hands-on with the Upspin and understanding its architecture and functionality, this can include running Upspin on local machines, going over the documentation.
     
--   Getting familiarized with docker and dockerizing the upsin binaries and making them available at repository.
+-   Getting familiarized with docker and dockerizing the Upspin binaries and making the docker image available at a registry (e,g. Dockerhub, Quay or Github).
     
--   Getting familiar with OpenShift as a system and understanding the basic building blocks of the same by.
+-   Getting familiar with OpenShift as a container orchestration system and understanding the basic building blocks of the same by.
     
 **Iteration 2:**
-This iteration will be mostly on the actual solution where the team would focus on design and strategy of deploying the upsin instance. One of the key tasks/deliverables of this iteration would be
+This iteration will be mostly on the actual solution where the team would focus on design and strategy of deploying the Upspin instance. One of the key tasks/deliverables of this iteration would be
 
 -   Deciding on the approach of the design with regards to level of abstraction and ease of use the solution is going to provide to the user (level of automation).
 
