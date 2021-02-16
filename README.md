@@ -2,11 +2,11 @@
 
 ## 1. Vision and Goals Of The Project
 
-##### Dilemma:
+**Dilemma:**
 
 Though a variety of cloud services like Apple or Google Photos, Dropbox, and Google Docs provide tremendous convenience for users to manage and share data, their use cases create digital information silos, seperated, segmented, and in lack of a streamlined integration. Moving content between these platforms exemplifies this issue as an user would need to download and then reupload the data.
 
-##### Vision:
+**Vision:**
 
 The vision is to leverage the Upspin project to solve the problems by providing a set of protocols and interfaces for universal access to secure, shareable data, and utilize the MOC’s OpenShift cluster to provide a highly scalable solution. The project creates a global namespace for users’ files based on an e-mail address, as a single reference to the file no matter whether that file is stored in Google Drive, Dropbox or a private Upspin server.
 
