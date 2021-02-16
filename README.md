@@ -61,7 +61,7 @@ A full illustration of the client-server relationship for each server. To reiter
 
 ![FIG4](images/figure4.png)
 
-#### Overview of OpenShift architecture ([here](https://www.openshift.com/learn/what-is-openshift)
+#### Overview of OpenShift architecture ([here](https://www.openshift.com/learn/what-is-openshift))
 
 OpenShift is a distribution of Kubernetes. OpenShift will be used here to orchestrate the container (combined store and directory server) of Upspin. Upspin will be containerized for deployment on the OpenShift cluster with the store and directory part of the same server. OpenShift is managed through declarative yaml templates ("manifests").
 
