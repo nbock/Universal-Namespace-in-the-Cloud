@@ -30,7 +30,8 @@ WORKDIR /home/upspin
 # Copy the upspinserver binary from previous build to current image
 COPY --from=build --chown=upspin:upspin /go/src/upspin/upspin/upspinserver .
 
-# Let upspinserver binary listen on ports 80 and 443 without running it as root
+# Let upspinserver binary listen on ports 80 and 443 without running the upspinserver as root later
+# We need to run setcap command as root here, like we did when added user named upspin
 RUN setcap cap_net_bind_service=+ep ./upspinserver
 
 # This directiory is needed for HTTPS connections
@@ -41,7 +42,4 @@ EXPOSE 443 80
 # Run upspinserver as user upspin we just created
 USER upspin:upspin
 
-# Start the server with some additional flags indicating it to
-# run in HTTP with localhost as server address (This needs to be 
-# further changes)
 CMD ./upspinserver
