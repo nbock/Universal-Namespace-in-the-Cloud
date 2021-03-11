@@ -1,4 +1,3 @@
-
 #This is a multistage docker file where build process is
 #seperated from the deployment
 
