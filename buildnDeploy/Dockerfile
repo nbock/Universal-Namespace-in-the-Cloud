@@ -16,10 +16,6 @@ RUN GOOS=linux GOARCH=amd64 go build upspin.io/cmd/upspinserver
 # Start a new image base of ubuntu
 FROM ubuntu:latest
 
-# Later setcap depends on libcap2-bin library
-RUN apt-get update
-RUN apt-get install -y libcap2-bin
-
 # Add user named upspin
 RUN useradd -m upspin
 
@@ -27,18 +23,22 @@ RUN useradd -m upspin
 WORKDIR /home/upspin
 
 # Copy the upspinserver binary from previous build to current image
-COPY --from=build --chown=upspin:upspin /go/src/upspin/upspin/upspinserver .
-
-# Let upspinserver binary listen on ports 80 and 443 without running the upspinserver as root later
-# We need to run setcap command as root here, like we did when added user named upspin
-RUN setcap cap_net_bind_service=+ep ./upspinserver
+COPY --from=build /go/src/upspin/upspin/upspinserver .
 
 # This directiory is needed for HTTPS connections
 RUN mkdir -p upspin/letsencrypt
 
-EXPOSE 443 80
+# Refer to Support Arbitrary User IDs section in 
+# https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines
+RUN chgrp -R 0 upspin/letsencrypt && chmod -R g+rwX upspin/letsencrypt
+
+EXPOSE 6443 8080
 
 # Run upspinserver as user upspin we just created
 USER upspin:upspin
 
-CMD ./upspinserver
+# Currently the pod could not handle the external https request correctly. See the details in the log of pod.
+CMD ./upspinserver -https=:6443 -http=:8080
+
+# The pod could handle the external http request correctly with the insecure flag though
+# CMD ./upspinserver -insecure=true -https=:6443 -http=:8080
