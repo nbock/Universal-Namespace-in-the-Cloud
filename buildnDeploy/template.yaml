@@ -84,7 +84,7 @@ objects:
             deployment: ${{DEPLOYMENT_NAME}}
         spec:
           containers:
-          - image: ' '
+          - image: ${{IMAGE}}
             name: ${{DEPLOYMENT_NAME}}
             ports:
             - containerPort: 6443
@@ -139,7 +139,7 @@ objects:
         targetPort: 6443-tcp
       tls:
 
-        ## Passthrough security, which will 
+        ## Passthrough security, which will allow upsinserver to handle ssl
         termination: passthrough
       to:
         kind: Service
