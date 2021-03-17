@@ -5,6 +5,8 @@ Walkthrough on this notion (files are here): https://www.notion.so/brianward1428
 
 build.yaml is what we have running on the insecure pods, template.yaml should work and is Ritesh's suggestion to standardize what we use (hasn't been tested as of 03/17/21)
 
+Incremental work for sprint 3 is in the insecure directory on this branch only - not intended to be merged into master 
+
 ## 1. Vision and Goals Of The Project
 
 **Dilemma:**
