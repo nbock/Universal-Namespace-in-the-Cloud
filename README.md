@@ -1,5 +1,10 @@
 # Universal Namespace In the Cloud
 
+## 0. Specific to this branch
+Walkthrough on this notion (files are here): https://www.notion.so/brianward1428/Insecure-Configuration-ca86a9d26918447699e551890cbf31fc
+
+build.yaml is what we have running on the insecure pods, template.yaml should work and is Ritesh's suggestion to standardize what we use (hasn't been tested as of 03/17/21)
+
 ## 1. Vision and Goals Of The Project
 
 **Dilemma:**

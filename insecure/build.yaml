@@ -1,0 +1,172 @@
+# How To
+
+# >>> run oc login command.
+# ## Next step is to create a template from this file
+
+# >>>> oc create -f <this_file.yaml>
+
+# ## Once the template is created successfuly, create the app using the tempplate created
+
+# >>> oc new-app <template_name>
+# Note: You can find template name in the file's first section
+
+# Successful creation should create complete deployment of upspinserver with ports forwarded
+
+# Additional Notes
+
+# To delete all resources created for a deployment
+# >>> oc delete all --selector app=<deployment_name>
+
+# To delete template
+# >>> oc delete template/<template_name>
+
+# To delete image stream tag
+# >>> oc delete is/<image_stream_tag_name>
+
+
+
+# Template to deploy upspin server
+kind: Template
+apiVersion: v1
+metadata:
+  name: nolan-v2
+
+# Image stream object
+objects:
+  - apiVersion: v1
+    kind: ImageStreamTag
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+        openshift.io/imported-from: ${{IMAGE}}
+      creationTimestamp: null
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
+      name: ${DEPLOYMENT_NAME}:${IMAGE_TAG}
+    tag:
+      annotations: null
+      from:
+        kind: DockerImage
+        name: "${{IMAGE}}"
+      generation: null
+      importPolicy: {}
+      name: "${{IMAGE_TAG}}"
+      referencePolicy:
+        type: ""
+
+# Deployment object
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":${DEPLOYMENT_NAME}:${IMAGE_TAG}},"fieldPath":"spec.template.spec.containers[?(@.name==\"${{DEPLOYMENT_NAME}}\")].image"}]'
+        openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${{DEPLOYMENT_NAME}}
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: OpenShiftNewApp
+          creationTimestamp: null
+          labels:
+            deployment: ${{DEPLOYMENT_NAME}}
+        spec:
+          containers:
+          - image: ${{IMAGE}}
+            name: ${{DEPLOYMENT_NAME}}
+            ports:
+            # these will be exposed in the container
+            - containerPort: 6443
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+            resources: {}
+    status: {}
+
+# Service object
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${DEPLOYMENT_NAME}
+    spec:
+      ports:
+        - name: 6443-tcp
+
+          ## Port forwarding configuration
+          port: "${{SOURCE_SSL_PORT}}"
+          protocol: TCP
+          targetPort: 8080
+
+        # - name: 8080-tcp
+        #   ## Port forwarding configuration
+        #   port: "${{SOURCE_TCP_PORT}}"
+        #   protocol: TCP
+        #   targetPort: 8080
+      selector:
+        deployment: ${{DEPLOYMENT_NAME}}
+    status:
+      loadBalancer: {}
+
+# Route Object
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${DEPLOYMENT_NAME}
+    spec:
+      port:
+        targetPort: 6443-tcp
+      tls:
+
+        ## Passthrough security, which will allow upsinserver to handle ssl
+        termination: edge
+      to:
+        kind: Service
+        name: ${{DEPLOYMENT_NAME}}
+        weight: 100
+      wildcardPoloicy: None
+
+
+# Change these parameters according to your needs
+parameters:
+- name: DEPLOYMENT_NAME
+  value: nolan-v2
+  required: true
+
+- name: SOURCE_SSL_PORT
+  value: "443"
+  required: true
+
+- name: SOURCE_TCP_PORT
+  value: "80"
+  required: true
+
+# Dockerhub image tag
+- name: IMAGE
+  value: upspinio/upspin:insecure_8080
+  required: true
+
+- name: IMAGE_TAG
+  value: insecure_8080
