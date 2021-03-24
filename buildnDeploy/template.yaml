@@ -23,57 +23,54 @@
 # To delete image stream tag
 # >>> oc delete is/<image_stream_tag_name>
 
-
+# The oc client needs to be the latest version, the current version is 4.7.2
 
 # Template to deploy upspin server
 kind: Template
 apiVersion: v1
 metadata:
-  name: my-template
+  name: ruichen-template-secure
 
 # Image stream object
 objects:
-  - apiVersion: v1
-    kind: ImageStreamTag
+  - kind: ImageStream
+    apiVersion: v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
-        openshift.io/imported-from: ${{IMAGE}}
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+      name: "${{IMAGE_TAG}}"
+      namespace: cs6620-sp2021-universal-namespace
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+      - annotations: 
+        openshift.io/imported-from: "${{IMAGE}}"
+        from:
+          kind: DockerImage
+          name: "${{IMAGE}}"
+        importPolicy: {}
+        name: "${{IMAGE_TAG}}"
+        referencePolicy:
+          type: Source
+
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
       creationTimestamp: null
       labels:
         app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: ${DEPLOYMENT_NAME}:${IMAGE_TAG}
-    tag:
-      annotations: null
-      from:
-        kind: DockerImage
-        name: "${{IMAGE}}"
-      generation: null
-      importPolicy: {}
-      name: "${{IMAGE_TAG}}"
-      referencePolicy:
-        type: ""
-
-# Deployment object
-  - apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      annotations:
-        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":${DEPLOYMENT_NAME}:${IMAGE_TAG}},"fieldPath":"spec.template.spec.containers[?(@.name==\"${{DEPLOYMENT_NAME}}\")].image"}]'
-        openshift.io/generated-by: OpenShiftNewApp
-        creationTimestamp: null
-      labels:
-        app: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
-      name: ${{DEPLOYMENT_NAME}}
+      name: "${{DEPLOYMENT_NAME}}"
+      namespace: cs6620-sp2021-universal-namespace
     spec:
       replicas: 1
       selector:
-        matchLabels:
-          deployment: ${{DEPLOYMENT_NAME}}
+        app: "${{DEPLOYMENT_NAME}}"
+        deploymentconfig: "${{DEPLOYMENT_NAME}}"
       strategy: {}
       template:
         metadata:
@@ -81,11 +78,12 @@ objects:
             openshift.io/generated-by: OpenShiftNewApp
           creationTimestamp: null
           labels:
-            deployment: ${{DEPLOYMENT_NAME}}
+            app: "${{DEPLOYMENT_NAME}}"
+            deploymentconfig: "${{DEPLOYMENT_NAME}}"
         spec:
           containers:
-          - image: ${{IMAGE}}
-            name: ${{DEPLOYMENT_NAME}}
+          - image: "${{IMAGE}}"
+            name: "${{IMAGE_TAG}}"
             ports:
             - containerPort: 6443
               protocol: TCP
@@ -94,64 +92,99 @@ objects:
             resources: {}
     status: {}
 
-# Service object
-  - apiVersion: v1
-    kind: Service
+# Route Object, for the CNAME host name
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+      name: "${{ROUTE_NAME}}"
+      namespace: cs6620-sp2021-universal-namespace
+    spec:
+      host: "${{HOST_NAME}}"
+      port:
+        targetPort: 6443-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: passthrough
+      to:
+        kind: Service
+        name: "${{DEPLOYMENT_NAME}}"
+        weight: 100
+      wildcardPoloicy: None
+
+# Route Object, for the original host name cnamed by the above host name
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+      name: "${{DEPLOYMENT_NAME}}"
+      namespace: cs6620-sp2021-universal-namespace
+    spec:
+      host: "${{OPENSHIFT_HOST_NAME}}"
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: "${{DEPLOYMENT_NAME}}"
+        weight: 100
+      wildcardPoloicy: None
+
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
       creationTimestamp: null
       labels:
-        app: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
-      name: ${DEPLOYMENT_NAME}
+        app: "${{DEPLOYMENT_NAME}}"
+      name: "${DEPLOYMENT_NAME}"
+      namespace: cs6620-sp2021-universal-namespace
     spec:
       ports:
         - name: 6443-tcp
-
           ## Port forwarding configuration
           port: "${{SOURCE_SSL_PORT}}"
           protocol: TCP
           targetPort: 6443
         - name: 8080-tcp
-
           ## Port forwarding configuration
           port: "${{SOURCE_TCP_PORT}}"
           protocol: TCP
           targetPort: 8080
       selector:
-        deployment: ${{DEPLOYMENT_NAME}}
+        app: "${{DEPLOYMENT_NAME}}"
+        deploymentconfig: "${{DEPLOYMENT_NAME}}"
     status:
       loadBalancer: {}
-
-# Route Object
-  - apiVersion: v1
-    kind: Route
-    metadata:
-      labels:
-        app: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
-        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
-      name: ${DEPLOYMENT_NAME}
-    spec:
-      port:
-        targetPort: 6443-tcp
-      tls:
-
-        ## Passthrough security, which will allow upsinserver to handle ssl
-        termination: passthrough
-      to:
-        kind: Service
-        name: ${{DEPLOYMENT_NAME}}
-        weight: 100
-      wildcardPoloicy: None
-
 
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: upspinriteshtest2
+  value: ruichen-6443
+  required: true
+
+- name: IMAGE
+  value: cloud6620/upspinio:ruichen-6443
+  required: true
+
+# Dockerhub image ta
+- name: IMAGE_TAG
+  value: ruichen-6443
+
+- name: ROUTE_NAME
+  value: ruchen-secure-route
+  required: true
+
+- name: HOST_NAME
+  value: ruichen.mocupspin.com
+  required: true
+
+- name: OPENSHIFT_HOST_NAME
+  value: ruichen-6443-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
   required: true
 
 - name: SOURCE_SSL_PORT
@@ -161,11 +194,3 @@ parameters:
 - name: SOURCE_TCP_PORT
   value: "80"
   required: true
-
-# Dockerhub image tag
-- name: IMAGE
-  value: upspinio/upspin:ritesh_root
-  required: true
-
-- name: IMAGE_TAG
-  value: ritesh_root
