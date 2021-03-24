@@ -31,14 +31,11 @@ COPY --from=build --chown=upspin:upspin /go/src/upspin/upspin/upspinserver .
 # This directiory is needed for HTTPS connections
 RUN mkdir -p upspin/letsencrypt
 
+
 # Currently running the server on HTTP with port 2000
-EXPOSE 2000
+EXPOSE 6443
 
 # Start the server with some additional flags indicating it to
 # run in HTTP with localhost as server address (This needs to be 
 # further changes)
-CMD ./upspinserver  -insecure=true -http=localhost:2000
-
-
-
-
+CMD ./upspinserver -insecure -http=:6443
