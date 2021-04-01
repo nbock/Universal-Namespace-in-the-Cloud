@@ -44,7 +44,7 @@ RUN chmod +x ./start.sh
 EXPOSE 6443 8080
 
 # Run upspinserver as user upspin we just created
-USER upspin:upspin
+# USER upspin:upspin
 
 # Currently the pod could not handle the external https request correctly. See the details in the log of pod.
 # CMD ./upspinserver -https=:6443 -http=:8080
