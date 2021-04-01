@@ -29,7 +29,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: ruichen-template-secure
+  name: ruichen-template-insecure
 
 # Image stream object
 objects:
@@ -105,8 +105,7 @@ objects:
       port:
         targetPort: 6443-tcp
       tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: passthrough
+        termination: edge
       to:
         kind: Service
         name: "${{DEPLOYMENT_NAME}}"
@@ -146,15 +145,20 @@ objects:
     spec:
       ports:
         - name: 6443-tcp
-          ## Port forwarding configuration
+          # Port forwarding configuration. With the edge TLS termination configuration,
+          # the external Https request would first reach the port 443 of the service. And then
+          # router would unencrypt the Https to http request, finally proxy the http request
+          # to the upspinserver pod
           port: "${{SOURCE_SSL_PORT}}"
           protocol: TCP
-          targetPort: 6443
+          # Since currently the upspinserver is using insecure flag, the pod itself would 
+          # only accept the HTTP request at port 8080
+          targetPort: 8080
         - name: 8080-tcp
-          ## Port forwarding configuration
+          # Port forwarding configuration
           port: "${{SOURCE_TCP_PORT}}"
           protocol: TCP
-          targetPort: 8080
+          targetPort: 6443
       selector:
         app: "${{DEPLOYMENT_NAME}}"
         deploymentconfig: "${{DEPLOYMENT_NAME}}"
@@ -164,27 +168,27 @@ objects:
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: ruichen-6443
+  value: ruichen-8080
   required: true
 
 - name: IMAGE
-  value: cloud6620/upspinio:ruichen-6443
+  value: cloud6620/upspinio:ruichen-8080
   required: true
 
-# Dockerhub image ta
+# Dockerhub image tag
 - name: IMAGE_TAG
-  value: ruichen-6443
+  value: ruichen-8080
 
 - name: ROUTE_NAME
-  value: ruchen-secure-route
+  value: ruchen-insecure-route
   required: true
 
 - name: HOST_NAME
-  value: ruichen.mocupspin.com
+  value: ruichen-insecure.mocupspin.com
   required: true
 
 - name: OPENSHIFT_HOST_NAME
-  value: ruichen-6443-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
+  value: ruichen-8080-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
   required: true
 
 - name: SOURCE_SSL_PORT
