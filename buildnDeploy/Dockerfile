@@ -23,6 +23,10 @@ RUN apt-get install -y curl gettext libnss-wrapper
 # Add user named upspin
 RUN useradd -m upspin
 
+# Ruichen additions (version: Nolan)
+RUN mkdir -p /upspin
+RUN chgrp -R 0 /upspin && chmod -R g+rwX /upspin
+
 # Work directory will be in format /home/{$USER}
 WORKDIR /home/upspin
 
