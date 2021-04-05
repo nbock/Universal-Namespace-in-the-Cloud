@@ -23,7 +23,7 @@ RUN apt-get install -y curl gettext libnss-wrapper
 # Add user named upspin
 RUN useradd -m upspin
 
-# Ruichen additions (version: Nolan)
+# Works for Nolan as of 04/05/21
 RUN mkdir -p /upspin
 RUN chgrp -R 0 /upspin && chmod -R g+rwX /upspin
 
@@ -36,7 +36,7 @@ COPY --from=build /go/src/upspin/upspin/upspinserver .
 # This directiory is needed for HTTPS connections
 RUN mkdir -p upspin/letsencrypt
 
-# Refer to Support Arbitrary User IDs section in 
+# Refer to Support Arbitrary User IDs section in
 # https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines
 RUN chgrp -R 0 upspin/letsencrypt && chmod -R g+rwX upspin/letsencrypt
 
