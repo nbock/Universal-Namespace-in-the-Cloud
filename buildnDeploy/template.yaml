@@ -23,13 +23,13 @@
 # To delete image stream tag
 # >>> oc delete is/<image_stream_tag_name>
 
-
+# The oc client needs to be the latest version, the current version is 4.7.2
 
 # Template to deploy upspin server
 kind: Template
 apiVersion: v1
 metadata:
-  name: my-template
+  name: ruichen-template-insecure-v1
 
 # Image stream object
 objects:
@@ -109,14 +109,17 @@ objects:
     spec:
       ports:
         - name: 6443-tcp
-
-          ## Port forwarding configuration
+          # Port forwarding configuration. With the edge TLS termination configuration,
+          # the external Https request would first reach the port 443 of the service. And then
+          # router would unencrypt the Https to http request, finally proxy the http request
+          # to the upspinserver pod
           port: "${{SOURCE_SSL_PORT}}"
           protocol: TCP
-          targetPort: 6443
+          # Since currently the upspinserver is using insecure flag, the pod itself would 
+          # only accept the HTTP request at port 8080
+          targetPort: 8080
         - name: 8080-tcp
-
-          ## Port forwarding configuration
+          # Port forwarding configuration
           port: "${{SOURCE_TCP_PORT}}"
           protocol: TCP
           targetPort: 8080
@@ -125,33 +128,74 @@ objects:
     status:
       loadBalancer: {}
 
-# Route Object
+# Route Object, for the CNAME host name
   - apiVersion: v1
     kind: Route
     metadata:
+      annotations:
+        kubernetes.io/tls-acme: "true"
       labels:
         app: ${{DEPLOYMENT_NAME}}
         app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
         app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
-      name: ${DEPLOYMENT_NAME}
+      name: ${{ROUTE_NAME}}
     spec:
+      host: ${{HOST_NAME}}
       port:
         targetPort: 6443-tcp
       tls:
-
-        ## Passthrough security, which will allow upsinserver to handle ssl
-        termination: passthrough
+        termination: edge
       to:
         kind: Service
         name: ${{DEPLOYMENT_NAME}}
         weight: 100
       wildcardPoloicy: None
 
+# Route Object, for the original host name cnamed by the above host name
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
+    spec:
+      host: ${{OPENSHIFT_HOST_NAME}}
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: ${{DEPLOYMENT_NAME}}
+        weight: 100
+      wildcardPoloicy: None
 
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: upspinriteshtest2
+  value: ruichen-8080-v1
+  required: true
+
+- name: IMAGE
+  value: cloud6620/upspinio:ruichen-8080-v1
+  required: true
+
+# Dockerhub image tag
+- name: IMAGE_TAG
+  value: ruichen-8080-v1
+
+- name: ROUTE_NAME
+  value: ruchen-insecure-route
+  required: true
+
+- name: HOST_NAME
+  value: ruichen-insecure.mocupspin.com
+  required: true
+
+- name: OPENSHIFT_HOST_NAME
+  value: ruichen-8080-v1-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
   required: true
 
 - name: SOURCE_SSL_PORT
@@ -161,11 +205,3 @@ parameters:
 - name: SOURCE_TCP_PORT
   value: "80"
   required: true
-
-# Dockerhub image tag
-- name: IMAGE
-  value: upspinio/upspin:ritesh_root
-  required: true
-
-- name: IMAGE_TAG
-  value: ritesh_root
