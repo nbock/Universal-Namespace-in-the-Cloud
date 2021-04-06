@@ -135,19 +135,19 @@ objects:
       annotations:
         kubernetes.io/tls-acme: "true"
       labels:
-        app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: "${{ROUTE_NAME}}"
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{ROUTE_NAME}}
     spec:
-      host: "${{HOST_NAME}}"
+      host: ${{HOST_NAME}}
       port:
         targetPort: 6443-tcp
       tls:
         termination: edge
       to:
         kind: Service
-        name: "${{DEPLOYMENT_NAME}}"
+        name: ${{DEPLOYMENT_NAME}}
         weight: 100
       wildcardPoloicy: None
 
@@ -158,17 +158,17 @@ objects:
       annotations:
         openshift.io/host.generated: "true"
       labels:
-        app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: "${{DEPLOYMENT_NAME}}"
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
     spec:
-      host: "${{OPENSHIFT_HOST_NAME}}"
+      host: ${{OPENSHIFT_HOST_NAME}}
       port:
         targetPort: 8080-tcp
       to:
         kind: Service
-        name: "${{DEPLOYMENT_NAME}}"
+        name: ${{DEPLOYMENT_NAME}}
         weight: 100
       wildcardPoloicy: None
 

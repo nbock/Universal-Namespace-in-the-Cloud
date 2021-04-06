@@ -23,6 +23,7 @@ RUN apt-get install -y curl gettext libnss-wrapper
 # Add user named upspin
 RUN useradd -m upspin
 
+# Create the /upspin directory in Dockerfile manually for now
 RUN mkdir -p /upspin
 RUN chgrp -R 0 /upspin && chmod -R g+rwX /upspin
 
