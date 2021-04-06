@@ -23,6 +23,9 @@ RUN apt-get install -y curl gettext libnss-wrapper
 # Add user named upspin
 RUN useradd -m upspin
 
+RUN mkdir -p /upspin
+RUN chgrp -R 0 /upspin && chmod -R g+rwX /upspin
+
 # Work directory will be in format /home/{$USER}
 WORKDIR /home/upspin
 
@@ -44,7 +47,7 @@ RUN chmod +x ./start.sh
 EXPOSE 6443 8080
 
 # Run upspinserver as user upspin we just created
-# USER upspin:upspin
+USER upspin:upspin
 
 # Currently the pod could not handle the external https request correctly. See the details in the log of pod.
 # CMD ./upspinserver -https=:6443 -http=:8080
