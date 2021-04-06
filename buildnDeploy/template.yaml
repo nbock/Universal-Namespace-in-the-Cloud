@@ -33,44 +33,47 @@ metadata:
 
 # Image stream object
 objects:
-  - kind: ImageStream
-    apiVersion: v1
+  - apiVersion: v1
+    kind: ImageStreamTag
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
-      labels:
-        app: "${{DEPLOYMENT_NAME}}"
-      name: "${{IMAGE_TAG}}"
-      namespace: cs6620-sp2021-universal-namespace
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-      - annotations: 
-        openshift.io/imported-from: "${{IMAGE}}"
-        from:
-          kind: DockerImage
-          name: "${{IMAGE}}"
-        importPolicy: {}
-        name: "${{IMAGE_TAG}}"
-        referencePolicy:
-          type: Source
-
-  - kind: DeploymentConfig
-    apiVersion: v1
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewApp
+        openshift.io/imported-from: ${{IMAGE}}
       creationTimestamp: null
       labels:
         app: "${{DEPLOYMENT_NAME}}"
-      name: "${{DEPLOYMENT_NAME}}"
-      namespace: cs6620-sp2021-universal-namespace
+        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
+      name: ${DEPLOYMENT_NAME}:${IMAGE_TAG}
+    tag:
+      annotations: null
+      from:
+        kind: DockerImage
+        name: "${{IMAGE}}"
+      generation: null
+      importPolicy: {}
+      name: "${{IMAGE_TAG}}"
+      referencePolicy:
+        type: ""
+
+# Deployment object
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":${DEPLOYMENT_NAME}:${IMAGE_TAG}},"fieldPath":"spec.template.spec.containers[?(@.name==\"${{DEPLOYMENT_NAME}}\")].image"}]'
+        openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
     spec:
       replicas: 1
       selector:
-        app: "${{DEPLOYMENT_NAME}}"
-        deploymentconfig: "${{DEPLOYMENT_NAME}}"
+        matchLabels:
+          deployment: ${{DEPLOYMENT_NAME}}
       strategy: {}
       template:
         metadata:
@@ -78,12 +81,11 @@ objects:
             openshift.io/generated-by: OpenShiftNewApp
           creationTimestamp: null
           labels:
-            app: "${{DEPLOYMENT_NAME}}"
-            deploymentconfig: "${{DEPLOYMENT_NAME}}"
+            deployment: ${{DEPLOYMENT_NAME}}
         spec:
           containers:
-          - image: "${{IMAGE}}"
-            name: "${{IMAGE_TAG}}"
+          - image: ${{IMAGE}}
+            name: ${{DEPLOYMENT_NAME}}
             ports:
             - containerPort: 6443
               protocol: TCP
@@ -92,64 +94,18 @@ objects:
             resources: {}
     status: {}
 
-# Route Object, for the CNAME host name
-  - kind: Route
-    apiVersion: v1
-    metadata:
-      annotations:
-        kubernetes.io/tls-acme: "true"
-      labels:
-        app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: "${{ROUTE_NAME}}"
-      namespace: cs6620-sp2021-universal-namespace
-    spec:
-      host: "${{HOST_NAME}}"
-      port:
-        targetPort: 6443-tcp
-      tls:
-        termination: edge
-      to:
-        kind: Service
-        name: "${{DEPLOYMENT_NAME}}"
-        weight: 100
-      wildcardPoloicy: None
-
-# Route Object, for the original host name cnamed by the above host name
-  - kind: Route
-    apiVersion: v1
-    metadata:
-      annotations:
-        openshift.io/host.generated: "true"
-      labels:
-        app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: "${{DEPLOYMENT_NAME}}"
-      namespace: cs6620-sp2021-universal-namespace
-    spec:
-      host: "${{OPENSHIFT_HOST_NAME}}"
-      port:
-        targetPort: 8080-tcp
-      to:
-        kind: Service
-        name: "${{DEPLOYMENT_NAME}}"
-        weight: 100
-      wildcardPoloicy: None
-
-  - kind: Service
-    apiVersion: v1
+# Service object
+  - apiVersion: v1
+    kind: Service
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
       creationTimestamp: null
       labels:
-        app: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
-        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
-      name: "${DEPLOYMENT_NAME}"
-      namespace: cs6620-sp2021-universal-namespace
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${DEPLOYMENT_NAME}
     spec:
       ports:
         - name: 6443-tcp
@@ -168,10 +124,53 @@ objects:
           protocol: TCP
           targetPort: 8080
       selector:
-        app: "${{DEPLOYMENT_NAME}}"
-        deploymentconfig: "${{DEPLOYMENT_NAME}}"
+        deployment: ${{DEPLOYMENT_NAME}}
     status:
       loadBalancer: {}
+
+# Route Object, for the CNAME host name
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        kubernetes.io/tls-acme: "true"
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
+      name: "${{ROUTE_NAME}}"
+    spec:
+      host: "${{HOST_NAME}}"
+      port:
+        targetPort: 6443-tcp
+      tls:
+        termination: edge
+      to:
+        kind: Service
+        name: "${{DEPLOYMENT_NAME}}"
+        weight: 100
+      wildcardPoloicy: None
+
+# Route Object, for the original host name cnamed by the above host name
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
+      name: "${{DEPLOYMENT_NAME}}"
+    spec:
+      host: "${{OPENSHIFT_HOST_NAME}}"
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: "${{DEPLOYMENT_NAME}}"
+        weight: 100
+      wildcardPoloicy: None
 
 # Change these parameters according to your needs
 parameters:
