@@ -36,7 +36,6 @@ COPY --from=build /go/src/upspin/upspin/upspinserver .
 # This directiory is needed for HTTPS connections
 RUN mkdir -p upspin/letsencrypt
 
-
 # Refer to Support Arbitrary User IDs section in 
 # https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines
 RUN chgrp -R 0 upspin/letsencrypt && chmod -R g+rwX upspin/letsencrypt
