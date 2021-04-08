@@ -214,6 +214,8 @@ parameters:
   value: "80"
   required: true
 
+# Created PVC with 10GB on OpenShift storage
+# Don't need to change the value of "upspin-storage-rwo"
 - name: PVC_NAME
   value: upspin-storage-rwo
 
