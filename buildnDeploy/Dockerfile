@@ -13,6 +13,9 @@ WORKDIR /go/src/upspin/upspin
 # Build the binaries
 RUN GOOS=linux GOARCH=amd64 go build upspin.io/cmd/upspinserver
 
+# Build upspinserver-drive
+RUN go get drive.upspin.io/cmd/...
+
 # Start a new image base of ubuntu
 FROM ubuntu:latest
 
