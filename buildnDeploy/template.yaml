@@ -29,7 +29,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: jp-template-storage
+  name: jp-template-volume
 
 # Image stream object
 objects:
@@ -183,27 +183,27 @@ objects:
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: upspin-jp-storage
+  value: upspin-jp-volume
   required: true
 
 - name: IMAGE
-  value: upspinio/upspin:upspin-jp-storage
+  value: upspinio/upspin:upspin-jp-volume11
   required: true
 
 # Dockerhub image tag
 - name: IMAGE_TAG
-  value: upspin-jp-storage
+  value: upspin-jp-volume11
 
 - name: ROUTE_NAME
-  value: upspin-jp-storage-cname
+  value: upspin-jp-volume-cname
   required: true
 
 - name: HOST_NAME
-  value: jp-storage-1.mocupspin.com
+  value: jp-vo.mocupspin.com
   required: true
 
 - name: OPENSHIFT_HOST_NAME
-  value: upspin-jp-storage-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
+  value: upspin-jp-volume-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
   required: true
 
 - name: SOURCE_SSL_PORT
@@ -214,13 +214,16 @@ parameters:
   value: "80"
   required: true
 
-# Created PVC with 10GB on OpenShift storage
-# Don't need to change the value of "upspin-storage-rwo"
+# Created PVC with 10GB, type as RWO, on OpenShift storage
+# Currently don't need to change the value of "upspin-storage-rwo"
 - name: PVC_NAME
   value: upspin-storage-rwo
+  required: true
 
 - name: MOUNT_PATH
-  value: /data
+  value: /home/upspin/upspin/
+  required: true
 
 - name: VOLUME_NAME
-  value: upspin-jp-storage-path
+  value: upspin-jp-volume-path
+  required: true
