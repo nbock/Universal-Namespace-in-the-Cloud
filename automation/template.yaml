@@ -1,0 +1,207 @@
+# How To
+
+# >>> run oc login command.
+# ## Next step is to create a template from this file
+
+# >>>> oc create -f <this_file.yaml>
+
+# ## Once the template is created successfuly, create the app using the tempplate created
+
+# >>> oc new-app <template_name>
+# Note: You can find template name in the file's first section
+
+# Successful creation should create complete deployment of upspinserver with ports forwarded
+
+# Additional Notes
+
+# To delete all resources created for a deployment
+# >>> oc delete all --selector app=<deployment_name>
+
+# To delete template
+# >>> oc delete template/<template_name>
+
+# To delete image stream tag
+# >>> oc delete is/<image_stream_tag_name>
+
+# The oc client needs to be the latest version, the current version is 4.7.2
+
+# Template to deploy upspin server
+kind: Template
+apiVersion: v1
+metadata:
+  name: nolan-template-auto8
+
+# Image stream object
+objects:
+  - apiVersion: v1
+    kind: ImageStreamTag
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+        openshift.io/imported-from: ${{IMAGE}}
+      creationTimestamp: null
+      labels:
+        app: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/component: "${{DEPLOYMENT_NAME}}"
+        app.kubernetes.io/instance: "${{DEPLOYMENT_NAME}}"
+      name: ${DEPLOYMENT_NAME}:${IMAGE_TAG}
+    tag:
+      annotations: null
+      from:
+        kind: DockerImage
+        name: "${{IMAGE}}"
+      generation: null
+      importPolicy: {}
+      name: "${{IMAGE_TAG}}"
+      referencePolicy:
+        type: ""
+
+# Deployment object
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":${DEPLOYMENT_NAME}:${IMAGE_TAG}},"fieldPath":"spec.template.spec.containers[?(@.name==\"${{DEPLOYMENT_NAME}}\")].image"}]'
+        openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          deployment: ${{DEPLOYMENT_NAME}}
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: OpenShiftNewApp
+          creationTimestamp: null
+          labels:
+            deployment: ${{DEPLOYMENT_NAME}}
+        spec:
+          containers:
+          - image: ${{IMAGE}}
+            name: ${{DEPLOYMENT_NAME}}
+            ports:
+            - containerPort: 6443
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+            resources: {}
+    status: {}
+
+# Service object
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${DEPLOYMENT_NAME}
+    spec:
+      ports:
+        - name: 6443-tcp
+          # Port forwarding configuration. With the edge TLS termination configuration,
+          # the external Https request would first reach the port 443 of the service. And then
+          # router would unencrypt the Https to http request, finally proxy the http request
+          # to the upspinserver pod
+          port: "${{SOURCE_SSL_PORT}}"
+          protocol: TCP
+          # Since currently the upspinserver is using insecure flag, the pod itself would
+          # only accept the HTTP request at port 8080
+          targetPort: 8080
+        - name: 8080-tcp
+          # Port forwarding configuration
+          port: "${{SOURCE_TCP_PORT}}"
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deployment: ${{DEPLOYMENT_NAME}}
+    status:
+      loadBalancer: {}
+
+# Route Object, for the CNAME host name
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        kubernetes.io/tls-acme: "true"
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{ROUTE_NAME}}
+    spec:
+      host: ${{HOST_NAME}}
+      port:
+        targetPort: 6443-tcp
+      tls:
+        termination: edge
+      to:
+        kind: Service
+        name: ${{DEPLOYMENT_NAME}}
+        weight: 100
+      wildcardPoloicy: None
+
+# Route Object, for the original host name cnamed by the above host name
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      labels:
+        app: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/component: ${{DEPLOYMENT_NAME}}
+        app.kubernetes.io/instance: ${{DEPLOYMENT_NAME}}
+      name: ${{DEPLOYMENT_NAME}}
+    spec:
+      host: ${{OPENSHIFT_HOST_NAME}}
+      port:
+        targetPort: 8080-tcp
+      to:
+        kind: Service
+        name: ${{DEPLOYMENT_NAME}}
+        weight: 100
+      wildcardPoloicy: None
+
+# Change these parameters according to your needs
+parameters:
+- name: DEPLOYMENT_NAME
+  value: nolan-template-auto8
+  required: true
+
+- name: IMAGE
+  value: cloud6620/upspinio:ruichen-8080
+  required: true
+
+# Dockerhub image tag
+- name: IMAGE_TAG
+  value: ruichen-8080
+
+- name: ROUTE_NAME
+  value: nolan-template-auto-route
+  required: true
+
+- name: HOST_NAME
+  value: nolan-template-auto9.mocupspin.com
+  required: true
+
+- name: OPENSHIFT_HOST_NAME
+  value: nolan-template-auto-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
+  required: true
+
+- name: SOURCE_SSL_PORT
+  value: "443"
+  required: true
+
+- name: SOURCE_TCP_PORT
+  value: "80"
+  required: true

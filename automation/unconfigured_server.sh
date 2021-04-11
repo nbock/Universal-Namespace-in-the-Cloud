@@ -37,4 +37,10 @@ fi
 # store all the yaml params as variables
 eval $(parse_yaml params.yaml)
 
-docker login -u $upspin_username -p $upspin_password
+$openshift_login
+oc create -f $yaml_file
+oc new-app $template_name
+
+sleep 5
+
+curl -X POST "https://api.cloudflare.com/client/v4/zones/6c6c793898e1697f199bc5676c3ddeda/dns_records" -H "Authorization: $bearer_token" -H "Content-Type: application/json" --data '{"type":"'"CNAME"'","name":"'"$cname"'","content":"'"$openshift_host_name"'","ttl":120,"proxied":false}'
