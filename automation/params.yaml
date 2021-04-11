@@ -1,8 +1,8 @@
-openshift_login: oc login https://k-openshift.osh.massopen.cloud:8443 --token=faP9d0f4X_p_4YxRcOxXXj-cT9H68LAFl6srNN2S7QU
+openshift_login: <oc_login_command>
 upspin_email: bock.n@northeastern.edu
 yaml_file: template.yaml
 template_name: nolan-template-auto9
 cname: nolan-template-auto9
-bearer_token: Bearer MXT1j94OYWP2iBXu2F2paCnhpL58At9JQEdoTa-F
+bearer_token: <bearer_token_var>
 route_name: nolan-template-auto-route
 openshift_host_name: nolan-auto-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
