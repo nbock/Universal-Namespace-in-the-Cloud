@@ -23,17 +23,11 @@ RUN apt-get install -y gettext libnss-wrapper
 # Add user named upspin
 RUN useradd -m upspin
 
-# Create the /upspin directory in Dockerfile manually for now
-# RUN mkdir -p /upspin
-# RUN chgrp -R 0 /upspin && chmod -R g+rwX /upspin
-
-
 # Work directory will be in format /home/{$USER}
 WORKDIR /home/upspin
 
 # Set the vaule of environment variable HOME as /home/upspin in this container
 ENV HOME=/home/upspin
-
 
 # Copy the upspinserver binary from previous build to current image
 COPY --from=build /go/src/upspin/upspin/upspinserver .
@@ -45,8 +39,6 @@ RUN mkdir -p upspin/server/storage
 
 # Refer to Support Arbitrary User IDs section in 
 # https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines
-# RUN chgrp -R 0 upspin/letsencrypt && chmod -R g+rwX upspin/letsencrypt
-
 # Set the ownership of upspin directory as root group, and add r,w,x permission to the root group
 RUN chgrp -R 0 upspin && chmod -R g+rwX upspin
 
