@@ -29,7 +29,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: ruichen-template-insecure
+  name: jp-template-volume
 
 # Image stream object
 objects:
@@ -92,6 +92,14 @@ objects:
             - containerPort: 8080
               protocol: TCP
             resources: {}
+            # Volume
+            volumeMounts:
+            - mountPath: ${{MOUNT_PATH}}
+              name: ${{VOLUME_NAME}}
+          volumes:
+          - name: ${{VOLUME_NAME}}
+            persistentVolumeClaim:
+              claimName: ${{PVC_NAME}}
     status: {}
 
 # Service object
@@ -175,27 +183,27 @@ objects:
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: ruichen-demo-root
+  value: upspin-jp-volume
   required: true
 
 - name: IMAGE
-  value: cs6620/upspinio:ruichen-demo-root
+  value: upspinio/upspin:upspin-jp-volume11
   required: true
 
 # Dockerhub image tag
 - name: IMAGE_TAG
-  value: ruichen-demo-root
+  value: upspin-jp-volume11
 
 - name: ROUTE_NAME
-  value: ruchen-insecure-route
+  value: upspin-jp-volume-cname
   required: true
 
 - name: HOST_NAME
-  value: ruichen-insecure.mocupspin.com
+  value: jp-vo.mocupspin.com
   required: true
 
 - name: OPENSHIFT_HOST_NAME
-  value: ruichen-8080-v1-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
+  value: upspin-jp-volume-cs6620-sp2021-universal-namespace.k-apps.osh.massopen.cloud
   required: true
 
 - name: SOURCE_SSL_PORT
@@ -204,4 +212,18 @@ parameters:
 
 - name: SOURCE_TCP_PORT
   value: "80"
+  required: true
+
+# Created PVC with 10GB, type as RWO, on OpenShift storage
+# Currently don't need to change the value of "upspin-storage-rwo"
+- name: PVC_NAME
+  value: upspin-storage-rwo
+  required: true
+
+- name: MOUNT_PATH
+  value: /home/upspin/upspin/
+  required: true
+
+- name: VOLUME_NAME
+  value: upspin-jp-volume-path
   required: true
