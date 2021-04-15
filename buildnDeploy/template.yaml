@@ -29,7 +29,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: ruichen-template-insecure-v1
+  name: ruichen-template-insecure
 
 # Image stream object
 objects:
@@ -175,16 +175,16 @@ objects:
 # Change these parameters according to your needs
 parameters:
 - name: DEPLOYMENT_NAME
-  value: ruichen-8080-v1
+  value: ruichen-demo-root
   required: true
 
 - name: IMAGE
-  value: cloud6620/upspinio:ruichen-8080-v1
+  value: cs6620/upspinio:ruichen-demo-root
   required: true
 
 # Dockerhub image tag
 - name: IMAGE_TAG
-  value: ruichen-8080-v1
+  value: ruichen-demo-root
 
 - name: ROUTE_NAME
   value: ruchen-insecure-route

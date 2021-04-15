@@ -5,4 +5,4 @@ envsubst < ${HOME}/passwd.template > /tmp/passwd
 export LD_PRELOAD=/usr/lib/libnss_wrapper.so
 export NSS_WRAPPER_PASSWD=/tmp/passwd
 export NSS_WRAPPER_GROUP=/etc/group
-exec ./upspinserver -insecure=true -https=:6443 -http=:8080
+exec ./upspinserver -https=:6443 -http=:8080
