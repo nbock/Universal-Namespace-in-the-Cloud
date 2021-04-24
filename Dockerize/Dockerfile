@@ -16,7 +16,7 @@ RUN GOOS=linux GOARCH=amd64 go build upspin.io/cmd/upspinserver
 # Start a new image base of ubuntu
 FROM ubuntu:latest
 
-# Just an example for how to install other packages in the docker file, could be deleted if not needed
+# Install packages in the docker file
 RUN apt-get update
 RUN apt-get install -y gettext libnss-wrapper
 
@@ -34,8 +34,6 @@ COPY --from=build /go/src/upspin/upspin/upspinserver .
 
 # This directiory is needed for HTTPS connections
 RUN mkdir -p upspin/letsencrypt
-RUN mkdir -p upspin/server
-RUN mkdir -p upspin/server/storage
 
 # Refer to Support Arbitrary User IDs section in 
 # https://docs.openshift.com/container-platform/3.11/creating_images/guidelines.html#openshift-specific-guidelines
@@ -52,15 +50,6 @@ EXPOSE 6443 8080
 # Run upspinserver as user upspin we just created
 USER upspin
 
-# Mount
-VOLUME "/home/upspin/upspin/"
-
-
-# Currently the pod could not handle the external https request correctly. See the details in the log of pod.
-# CMD ./upspinserver -https=:6443 -http=:8080
-
-# The pod could handle the external http request correctly with the insecure flag though
-# CMD ./upspinserver -insecure=true -https=:6443 -http=:8080
-
+VOLUME /home/upspin/upspin
 
 CMD ./start.sh
