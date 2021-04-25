@@ -1,0 +1,8 @@
+openshift_login: <oc_login_command> # obtained from OpenShift
+upspin_email: <upspin_email> # user's upspin email
+yaml_file: template.yaml # this is template.yaml for this project
+template_name: <template_name> # line 35 in template.yaml
+cname: <cname> # user defined cname
+bearer_token: <bearer_token> # bearer token is user specific and secret
+route_name: <route_name> # line 213 of template.yaml
+openshift_host_name: <openshift_host_name> # line 221 of template.yaml
