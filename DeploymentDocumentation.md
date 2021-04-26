@@ -1,14 +1,10 @@
 # Deployment Documentation
 
----
-
-# About
 
 This is documentation for the steps necessary to deploy upsin server in an openshift cluster. After following all steps, a user can expect to have a running Upspin server on OpenShift.
 
 This documentation is an extension to the original [Upspin documentation](https://upspin.io/doc/), which is the basis for this deployment. The goal of this document is to guide a user through deploying an Upspin server on a OpenShift cluster with default pod configurations.
 
----
 
 ## **Prerequisites for setup**
 
@@ -31,7 +27,6 @@ This documentation is an extension to the original [Upspin documentation](https:
 
     On success, you should see a running application in your OpenShift namespace called **openshift-acme**. You could check more details at [ACME Controller](). 
 
----
 
 ## 1. Create app with `template.yaml` ([More details]())
 
@@ -63,7 +58,6 @@ oc new-app <template_name>
 
 - Upon successful running of the above command, you should see creation messages for all the OpenShift primitives present in the template.
 
----
 
 ## 2. Add CNAME record to your hostname
 
@@ -82,7 +76,6 @@ curl -X POST "<CloudFlare API link>" \
 
 Note: This step will vary according to the service which is providing with the hostname. For our setup we used Cloudflare.
 
----
 
 ## 3. Setup domain
 
@@ -103,7 +96,6 @@ Can verify it was placed succesfully with the following command:
 host -t TXT <your domain>
 ```
 
----
 
 ## 4. Configure Server
 
@@ -117,7 +109,6 @@ upspin setupserver -domain=<your domain> -host=<your custom hostname>
 
 This command will setup the server, but further details can be found at the [upspin documentation.](https://upspin.io/doc/server_setup.md)
 
----
 
 ## 5. Verify Successful Configuration
 
@@ -136,7 +127,6 @@ local$ upspin get johnsmith@gmail.com/hello
 Hello, Upspin
 ```
 
----
 
 ## 6. Clean up
 
@@ -168,7 +158,6 @@ local$ oc get all -o name
 local$ oc describe route/<name>
 ```
 
----
 
 ## 7. Appendix
 
