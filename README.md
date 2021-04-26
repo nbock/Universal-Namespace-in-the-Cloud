@@ -130,11 +130,9 @@ Lastly, we mount the persistent volume at our working directory. Even if the cur
 
 ## **5. Acceptance criteria**
 
-Our minimum acceptance criteria was a containerized Upspin instance deployed and publicly accessible on the Massachusetts Open Cloud’s OpenShift cluster, which will store the actual data for items and the directory will give references to the data stored, and a repeatable automated process for containerizing and deploying further Upspin instances.
+Our minimum acceptance criteria was a containerized Upspin instance deployed and publicly accessible on the Massachusetts Open Cloud’s OpenShift cluster, which will store the actual data for items and the directory will give references to the data stored, and a repeatable automated process for containerizing and deploying further Upspin instances. Additionally, our MVP consisted of creating documentation for that process, which we have available ![here](DeploymentDocumentation.md).
 
 The stretch goals we accomplished are:
-
-
 
 *   Persistent volumes being used with the Upspin server in order to provide data consistency during service outages.
 *   Automation provided for a system administrator to quickly and easily deploy an Upspin server with all aspects of the MVP and persistent volumes.
