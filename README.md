@@ -23,9 +23,8 @@ Conversion notes:
 
 # **Universal Namespace In the Cloud**
 
-
-## **Project Description Template**
 <!-----
+## **Project Description Template**
 The purpose of this Project Description is to present the ideas proposed and decisions made during the preliminary envisioning and inception phase of the project. The goal is to analyze an initial concept proposal at a strategic level of detail and attain/compose an agreement between the project team members and the project customer (mentors and instructors) on the desired solution and overall project direction.
 
 This template proposal contains a number of sections, which you can edit/modify/add/delete/organize as you like. Some key sections we’d like to have in the proposal are:
@@ -44,8 +43,7 @@ Project Proposal can be used during the follow-up analysis and design meetings t
 
 
 
-##
-**1. Vision and Goals Of The Project:**
+## **1. Vision and Goals Of The Project:**
 
 Dilemma:
 
@@ -73,15 +71,13 @@ We also explored the following features (Details would be included in the Scope 
 *   Using volumes to protect against data loss during OpenShift outages.
 *   Automation of TLS certificate management via the ACME controller.
 
-##
-**2. Users/Personas Of The Project:**
+## **2. Users/Personas Of The Project:**
 
 
 The primary users for our project are system administrators who wish to quickly containerize Upspin instances and deploy container images to MOC’s OpenShift clusters. There is a secondary use case for individuals (personal users, families or groups of friends) who wish to use our Upspin server(s), but this was not the focus of the project as use of Upspin servers has been accomplished thoroughly. Once a containerized Upspin instance is hosted in the cloud, any user (developer or otherwise) can host data and give access to others, so a major bottleneck now is quickly and easily containerizing and deploying Upspin instances in the cloud.
 
 
-##
-**3. Scope and Features Of The Project:**
+## **3. Scope and Features Of The Project:**
 
 
 
@@ -101,8 +97,7 @@ The primary users for our project are system administrators who wish to quickly 
     *   Volumes: added persistent volumes to our Upspin server, which serve to protect against data loss during service outages. This allows system administrators to provide some guarantees on data maintenance while data is hosted on Upspin servers.
     *   Automation: created an automated process for deploying an Upspin instance to OpenShift with the proper TLS certificates. This allows system administrators to quickly and easily begin using Upspin.
 
-##
-**4. Solution Concept**
+## **4. Solution Concept**
 
 
 The basic solution for this project is to provide an automatic solution for deploying Upspin instances to OpenShift clusters running on MOC.
@@ -112,23 +107,13 @@ The basic solution for this project is to provide an automatic solution for depl
 
 An individual Upspin user is represented by a username (usually email address) to identify the user. The key server holds the public key and directory server address for each user. For the global Upspin ecosystem, this service is provided by a server running at_ key.upspin.io. _All users can save their public keys there, and can in turn ask the key server for the public keys of any other user in the system. The directory server (in our MVP, will be the same server as the store server) has an association between entries and references to actual data in the store server.
 
-The below diagram illustrates the whole process of retrieving data by a client with a file name. To reiterate, our MVP will have a single, combined directory and store server
-
-
-
-<p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
+The below diagram illustrates the whole process of retrieving data by a client with a file name. To reiterate, our MVP will have a single, combined directory and store server.
 
 ![upspin overview](images/figure4.png)
 
 
 
 ### High Level Overview of Solution Architecture
-
-
-
-<p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
 
 ![high level architecture](images/figure6.png)
 
@@ -144,17 +129,11 @@ Then the local upspin client would set up the deployed upspin server. During thi
 
 Lastly, we mount the persistent volume at our working directory. Even if the current pod crashes, all the existing data under the working directory would still be preserved and could be read back after a new pod gets initialized.
 
-
-
-<p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
-
-
 ![architecture](images/figure7.png)
 
 
 
-##
-**5. Acceptance criteria**
+## **5. Acceptance criteria**
 
 Our minimum acceptance criteria was a containerized Upspin instance deployed and publicly accessible on the Massachusetts Open Cloud’s OpenShift cluster, which will store the actual data for items and the directory will give references to the data stored, and a repeatable automated process for containerizing and deploying further Upspin instances.
 
@@ -165,8 +144,7 @@ The stretch goals we accomplished are:
 *   Persistent volumes being used with the Upspin server in order to provide data consistency during service outages.
 *   Automation provided for a system administrator to quickly and easily deploy an Upspin server with all aspects of the MVP and persistent volumes.
 
-##
-**6. Releases:**
+## **6. Releases:**
 
 
 
@@ -184,8 +162,6 @@ Our first iteration consisted of ramping up technical skills along with completi
 
 This iteration also focused on familiarizing the team with some of the OpenShift primitives and beginning to explore local UpSpin server configuration. The key tasks and deliverables were:
 
-
-
 *   Getting familiar with OpenShift as a container orchestration system and understanding the basic building blocks of it.
 *   Beginning to use the OpenShift CLI tool, which would eventually allow us to begin the automation process.
 
@@ -196,8 +172,6 @@ Note: we were also iterating towards a group presentation on the paper Flat Data
 
 This iteration was mostly focused on iterating towards the actual solution: the design and strategy of deploying the Upspin instance. One of the key tasks/deliverables of this iteration was:
 
-
-
 *   Deciding on the approach of the design with regards to level of abstraction and ease of use the solution is going to provide to the user (level of automation).
     *   Eventually decided to provide the MVP (as described above) with persistent volumes and an automation script for deploying.
     *   Similarly, decided to include full documentation for setting up the Upspin server in case a system administrator hoped to deploy an Upspin server with different attributes (e.g. not on OpenShift, not using cloudflare).
@@ -206,8 +180,6 @@ This iteration was mostly focused on iterating towards the actual solution: the 
 ### Iteration/Release 4:
 
 This iteration was focused on improving the solution we output for release 3 and fully implementing all aspects of the MVP, automation suite, and persistent volume storage. The key tasks/deliverables of this iteration were:
-
-
 
 *   Full automation script to parse a parameters file and fully deploy an Upspin server on OpenShift.
 *   Finished developing documentation for all aspects of our project (e.g. deploying Upspin server, configuring cnames, configuring routes, using the OpenShift command line tool).
