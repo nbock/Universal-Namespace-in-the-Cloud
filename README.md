@@ -21,17 +21,7 @@ Conversion notes:
 ----->
 
 
-<p style="color: red; font-weight: bold">>>>>>  gd2md-html alert:  ERRORs: 0; WARNINGs: 0; ALERTS: 3.</p>
-<ul style="color: red; font-weight: bold"><li>See top comment block for details on ERRORs and WARNINGs. <li>In the converted Markdown or HTML, search for inline alerts that start with >>>>>  gd2md-html alert:  for specific instances that need correction.</ul>
-
-<p style="color: red; font-weight: bold">Links to alert messages:</p><a href="#gdcalert1">alert1</a>
-<a href="#gdcalert2">alert2</a>
-<a href="#gdcalert3">alert3</a>
-
-<p style="color: red; font-weight: bold">>>>>> PLEASE check and correct alert issues and delete this message and the inline alerts.<hr></p>
-
-
-**Universal Namespace In the Cloud**
+# **Universal Namespace In the Cloud**
 
 
 ## **Project Description Template**
@@ -129,7 +119,7 @@ The below diagram illustrates the whole process of retrieving data by a client w
 <p id="gdcalert1" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image1.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert2">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
 
 
-![alt_text](images/image1.png "image_tooltip")
+![upspin overview](images/figure4.png)
 
 
 
@@ -140,7 +130,7 @@ The below diagram illustrates the whole process of retrieving data by a client w
 <p id="gdcalert2" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image2.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert3">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
 
 
-![alt_text](images/image2.png "image_tooltip")
+![high level architecture](images/figure6.png)
 
 
 The high level architecture of our solution starts with the containerization of an upspin instance (directory and store server) via Docker. We then deploy the hosted image (dockerhub) on OpenShift which will serve the upspin instance on it’s auto-generated URL. The last step is to set up a custom hostname to point to this deployment and allow authenticated users to read and write to the upspin instance.
@@ -159,7 +149,7 @@ Lastly, we mount the persistent volume at our working directory. Even if the cur
 <p id="gdcalert3" ><span style="color: red; font-weight: bold">>>>>>  gd2md-html alert: inline image link here (to images/image3.png). Store image on your image server and adjust path/filename/extension if necessary. </span><br>(<a href="#">Back to top</a>)(<a href="#gdcalert4">Next alert</a>)<br><span style="color: red; font-weight: bold">>>>>> </span></p>
 
 
-![alt_text](images/image3.png "image_tooltip")
+![architecture](images/figure7.png)
 
 
 
