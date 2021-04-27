@@ -8,6 +8,8 @@ yaml_file: template.yaml
 template_name: <template_name>
 # user defined cname
 cname: <cname> 
+# domain being used by user
+domain: <domain-name>
 # bearer token is user specific and secret
 bearer_token: <bearer_token> 
 # line 213 of template.yaml
