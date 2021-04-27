@@ -47,9 +47,9 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/6c6c793898e1697f199bc56
 
 # upspin configuration
 
-upsinTXT= $(upspin setupdomain -domain=$cname.$domain | grep -o 'upspin:[a-z0-9-]*')
+upsinTXT=$(upspin setupdomain -domain=$cname.$domain | grep -o 'upspin:[a-z0-9-]*')
 
-curl -X POST "https://api.cloudflare.com/client/v4/zones/6c6c793898e1697f199bc5676c3ddeda/dns_records" -H "Authorization: $bearer_token" -H "Content-Type: application/json" --data '{"type":"'"TEXT"'","name":"'"$cname"'","content":"'"$upsinTXT"'","ttl":120,"proxied":false}'
+curl -X POST "https://api.cloudflare.com/client/v4/zones/6c6c793898e1697f199bc5676c3ddeda/dns_records" -H "Authorization: $bearer_token" -H "Content-Type: application/json" --data '{"type":"'"TXT"'","name":"'"$cname"'","content":"'"$upsinTXT"'","ttl":120,"proxied":false}'
 
 echo "authorization takes 130s"
 
