@@ -37,8 +37,10 @@ This template proposal contains a number of sections, which you can edit/modify/
 
 Project Proposal can be used during the follow-up analysis and design meetings to give context to efforts of more detailed technical specifications and plans. It provides a clear direction for the project team; outlines project goals, priorities, and constraints; and sets expectations.
 ----->
-## 0. Team
+## 0. Start up and team members
 All code in this repo was done by the team of Nolan Bock, Brian Ward, Ritesh Desai, Ruichen Wang, and Jiapei Li at Northeastern University. We were advised by Professor Peter Desnoyers, Patrick Dillon, and Aditya Narayanaswamy.
+
+The fastest way to set up a universal namespace in the cloud is by following the [documentation that we developed](../DeploymentDocumentation.md). Please create an issue if you run into any!
 
 ## **1. Vision and Goals Of The Project:**
 
