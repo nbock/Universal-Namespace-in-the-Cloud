@@ -21,7 +21,7 @@ Conversion notes:
 ----->
 
 
-# **Universal Namespace In the Cloud**
+# **Creating a Universal Namespace In the Cloud**
 
 <!-----
 ## **Project Description Template**
