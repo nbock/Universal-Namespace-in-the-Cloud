@@ -40,7 +40,7 @@ Project Proposal can be used during the follow-up analysis and design meetings t
 ## 0. Start up and team members
 All code in this repo was done by the team of Nolan Bock, Brian Ward, Ritesh Desai, Ruichen Wang, and Jiapei Li at Northeastern University. We were advised by Professor Peter Desnoyers, Patrick Dillon, and Aditya Narayanaswamy.
 
-The fastest way to set up a universal namespace in the cloud is by following the [documentation that we developed](../DeploymentDocumentation.md). Please create an issue if you run into any!
+The fastest way to set up a universal namespace in the cloud is by following the [documentation that we developed](/DeploymentDocumentation.md). Please create an issue if you run into any!
 
 ## **1. Vision and Goals Of The Project:**
 
